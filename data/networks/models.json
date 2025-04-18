@@ -130,7 +130,7 @@
             "labels": "ssd_coco_labels.txt",
             "input": "Input",
             "input_dims": [3, 300, 300],
-            "output": {"bbox": "Postprocessor", "count": "PostProcessor_1"},
+            "output": {"bbox": "Postprocessor", "count": "Postprocessor_1"},
             "description": "SSD Mobilenet-v1 UFF model, trained on 90-class MS-COCO"
         },
         
