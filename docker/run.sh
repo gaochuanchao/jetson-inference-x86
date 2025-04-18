@@ -70,7 +70,8 @@ DATA_VOLUME=" \
 --volume $PWD/$CLASSIFY_DIR/models:$DOCKER_ROOT/$CLASSIFY_DIR/models \
 --volume $PWD/$DETECTION_DIR/data:$DOCKER_ROOT/$DETECTION_DIR/data \
 --volume $PWD/$DETECTION_DIR/models:$DOCKER_ROOT/$DETECTION_DIR/models \
---volume $PWD/$RECOGNIZER_DIR/data:$DOCKER_ROOT/$RECOGNIZER_DIR/data "
+--volume $PWD/$RECOGNIZER_DIR/data:$DOCKER_ROOT/$RECOGNIZER_DIR/data \
+--volume $PWD/profiling:$DOCKER_ROOT/build/x86_64/bin/profiling"
 
 # parse user arguments
 USER_COMMAND=""
@@ -221,6 +222,7 @@ elif [ $ARCH = "x86_64" ]; then
 		--ulimit memlock=-1 \
 		--ulimit stack=67108864 \
 		-e NVIDIA_DRIVER_CAPABILITIES=all \
+        -e PYTHONPATH=/jetson-inference/python/python:/jetson-inference/utils/python/python:/jetson-inference/build/x86_64/lib/python/3.10:$PYTHONPATH \
 		-w $DOCKER_ROOT \
 		$DISPLAY_DEVICE $V4L2_DEVICES \
 		$DATA_VOLUME $USER_VOLUME $DEV_VOLUME \

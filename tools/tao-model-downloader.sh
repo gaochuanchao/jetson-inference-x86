@@ -145,10 +145,10 @@ function download_archive()
 #
 function download_tao_converter()
 {
-	local url="https://api.ngc.nvidia.com/v2/resources/nvidia/tao/tao-converter/versions/v3.21.11_trt8.0_aarch64/files/tao-converter"
+	local url="https://api.ngc.nvidia.com/v2/resources/nvidia/tao/tao-converter/versions/v5.1.0_8.6.3.1_x86/files/tao-converter"
 	
 	if [[ $L4T_RELEASE -ge 34 ]]; then
-		url="https://api.ngc.nvidia.com/v2/resources/nvidia/tao/tao-converter/versions/v3.22.05_trt8.4_aarch64/files/tao-converter"
+		url="https://api.ngc.nvidia.com/v2/resources/nvidia/tao/tao-converter/versions/v5.1.0_8.6.3.1_x86/files/tao-converter"
 	fi
 	
 	echo "$LOG downloading tao-converter from $url"

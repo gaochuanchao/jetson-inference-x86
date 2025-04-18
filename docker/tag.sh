@@ -34,7 +34,7 @@ if [ $ARCH = "aarch64" ]; then
 	fi
 
 elif [ $ARCH = "x86_64" ]; then
-	CONTAINER_TAG="22.06"  # NGC pytorch base container tag (TODO: query the latest release)
+	CONTAINER_TAG="24.04"  # default: 22.06.  NGC pytorch base container tag (TODO: query the latest release)
 fi
 	
 # check if ROS is to be used

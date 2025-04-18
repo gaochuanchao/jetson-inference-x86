@@ -555,6 +555,11 @@ public:
 	 * Retrieve the network runtime (in milliseconds).
 	 */
 	inline float GetNetworkTime()							{ return GetProfilerTime(PROFILER_NETWORK, PROFILER_CUDA); }
+
+	/**
+	 * Retrieve the CPU total runtime (in milliseconds).
+	 */
+	inline float GetCPUTotalTime()						{ return GetProfilerTime(PROFILER_TOTAL, PROFILER_CPU); }
 	
 	/**
 	 * Retrieve the network name (it's filename).

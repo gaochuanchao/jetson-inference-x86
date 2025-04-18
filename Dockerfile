@@ -35,7 +35,9 @@ ENV SHELL /bin/bash
 
 WORKDIR /jetson-inference
 
-  
+# Install system dependencies needed for repo management and identify OS version
+RUN apt-get update && apt-get install -y software-properties-common lsb-release wget gnupg2  
+
 #
 # install development packages
 #
@@ -73,24 +75,27 @@ RUN mkdir -p /usr/local/include/gstreamer-1.0/gst && \
 # 
 # install python packages
 #
+RUN apt-get install -y build-essential libffi-dev libssl-dev 
+
 COPY python/training/detection/ssd/requirements.txt /tmp/pytorch_ssd_requirements.txt
 COPY python/www/flask/requirements.txt /tmp/flask_requirements.txt
 COPY python/www/dash/requirements.txt /tmp/dash_requirements.txt
 
-RUN pip3 install --no-cache-dir --verbose --upgrade Cython && \
-    pip3 install --no-cache-dir --verbose -r /tmp/pytorch_ssd_requirements.txt && \
-    pip3 install --no-cache-dir --verbose -r /tmp/flask_requirements.txt && \
-    pip3 install --no-cache-dir --verbose -r /tmp/dash_requirements.txt
+RUN pip3 install --no-cache-dir --verbose --upgrade Cython
+RUN pip3 install --no-cache-dir --verbose -r /tmp/pytorch_ssd_requirements.txt
+# RUN pip3 install --no-cache-dir --verbose -r /tmp/flask_requirements.txt
+RUN pip3 install --no-cache-dir --ignore-installed -r /tmp/flask_requirements.txt
+RUN pip3 install --no-cache-dir --verbose -r /tmp/dash_requirements.txt
     
     
 # 
 # install OpenCV (with CUDA)
 #
-ARG OPENCV_URL=https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz
-ARG OPENCV_DEB=OpenCV-4.5.0-aarch64.tar.gz
+# ARG OPENCV_URL=https://nvidia.box.com/shared/static/5v89u6g5rb62fpz4lh0rz531ajo2t5ef.gz
+# ARG OPENCV_DEB=OpenCV-4.5.0-aarch64.tar.gz
 
-COPY docker/containers/scripts/opencv_install.sh /tmp/opencv_install.sh
-RUN cd /tmp && ./opencv_install.sh ${OPENCV_URL} ${OPENCV_DEB}
+# COPY docker/containers/scripts/opencv_install.sh /tmp/opencv_install.sh
+# RUN cd /tmp && ./opencv_install.sh ${OPENCV_URL} ${OPENCV_DEB}
 
   
 #
@@ -110,10 +115,16 @@ COPY CMakePreBuild.sh CMakePreBuild.sh
 #
 # build source
 #
+
+RUN apt-get update && apt-get install -y libsoup2.4-dev libglew-dev libglfw3-dev libgl1-mesa-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+RUN apt-get install -y libjson-glib-dev libgstrtspserver-1.0-dev libgomp1 libglvnd0 libglvnd-dev
+
+
 RUN mkdir docs && \
     touch docs/CMakeLists.txt && \
     sed -i 's/nvcaffe_parser/nvparsers/g' CMakeLists.txt && \
     cp -r /usr/local/include/gstreamer-1.0/gst/webrtc /usr/include/gstreamer-1.0/gst && \
+    [ -e /usr/lib/$(uname -m)-linux-gnu/libgstwebrtc-1.0.so ] || \
     ln -s /usr/lib/$(uname -m)-linux-gnu/libgstwebrtc-1.0.so.0 /usr/lib/$(uname -m)-linux-gnu/libgstwebrtc-1.0.so && \
     mkdir build && \
     cd build && \
@@ -121,8 +132,8 @@ RUN mkdir docs && \
     make -j$(nproc) && \
     make install && \
     /bin/bash -O extglob -c "cd /jetson-inference/build; rm -rf -v !($(uname -m)|download-models.*)" && \
-    rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
     
 # build out-of-tree samples
 RUN cd examples/my-recognition && \
@@ -132,4 +143,4 @@ RUN cd examples/my-recognition && \
     make
 
 # workaround for "cannot allocate memory in static TLS block"
-ENV LD_PRELOAD=${LD_PRELOAD}:/usr/lib/aarch64-linux-gnu/libgomp.so.1:/lib/aarch64-linux-gnu/libGLdispatch.so.0
+# ENV LD_PRELOAD=${LD_PRELOAD}:/usr/lib/aarch64-linux-gnu/libgomp.so.1:/lib/aarch64-linux-gnu/libGLdispatch.so.0
