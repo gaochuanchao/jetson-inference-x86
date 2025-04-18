@@ -1,5 +1,5 @@
 build/
-data/networks/
+# data/networks/
 data/images/test
 data/images/qa/results
 logs/
